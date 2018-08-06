@@ -30,23 +30,31 @@ public class WettApplication {
 	 * Führt alle Wetten aus
 	 */
 	private void execWetten() {
-		Map<Wette,Integer> stat = new HashMap<>();
+		Map<Integer,Integer> winMap = new HashMap<>();
 		logger.info("Ok, laß uns wetten");
 		for (int i=0; i < NUMBER; i++ ){
-			Wette parm = execWette().getW1();
-			stat.put(parm, (stat.get(parm)==null ? 1 : stat.get(parm)+1));
+			WettErgebnis res = execWette();
+			Integer win = res.getComp();	// -1: verloren, 0: unentschieden, 1: gewonnen
+			winMap.put(win, winMap.get(win)==null ? 1 : winMap.get(win)+1);
 		}
-		logErgebnis(stat);
+		logErgebnis(winMap);
 	}
 
 	/**
 	 * Gibt eine Statistik über alle ausgeführten Wetten aus
-	 * @param stat Map with statistics
+	 * @param map Map with statistics
 	 */
-	private void logErgebnis(Map<Wette,Integer> stat) {
+	private void logErgebnis(Map<Integer,Integer> map) {
 		logger.info("Die Ergebnisse von " + NUMBER + " Wetten");
-		for ( Map.Entry<Wette,Integer> entry : stat.entrySet()) {
-			logger.info(entry.getKey() + " : " + entry.getValue()
+		for ( Map.Entry<Integer,Integer> entry : map.entrySet()) {
+
+			String res = "";
+			switch (entry.getKey()) {
+				case -1: res = "Verloren"; break;
+				case 1: res = "Gewonnen"; break;
+				default: res = "Unentschieden" ;
+			}
+			logger.info(res + " : " + entry.getValue()
 					+ " mal [" + Math.abs(entry.getValue()*100/NUMBER) + "%]");
 		}
 	}
